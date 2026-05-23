@@ -1,0 +1,5 @@
+# Dependências do Node (são muito pesadas, o GitHub não precisa delas)
+node_modules/
+
+# O nosso cofre de senhas (NUNCA subir para o GitHub)
+.env
