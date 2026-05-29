@@ -207,12 +207,12 @@ export default function Home({ colors, handleNavigation }) {
               {
                 nome: 'Henrique Macedo',
                 papel: 'Engenheiro de dados',
-                desc: 'Desenvolvimento dos modelos preditivos e treinamento das redes neurais para detecção de anomalias.'
+                desc: 'Responsável pela modelagem do banco de dados e construção dos pipelines de extração e tratamento dos dados gerados pelos sensores.'
               },
               {
                 nome: 'Henrique Prado',
                 papel: 'Especialista em gestão de projetos e documentação',
-                desc: 'Desenvolvimento dos modelos preditivos e treinamento das redes neurais para detecção de anomalias.'
+                desc: 'Responsável pelo acompanhamento das entregas do projeto, gestão de riscos, documentação arquitetural e manuais de uso."'
               },
               {
                 nome: 'João Henrique',

@@ -4,6 +4,133 @@ const express = require('express');
 const router = express.Router();
 const db = require('./db');
 const bcrypt = require('bcryptjs');
+const mqttClient = require('./mqttService'); // Importa o cliente MQTT configurado anteriormente
+const { processarDadosVibracao } = require('./signalProcessor');
+
+// ==========================================
+// ROTAS DE GERENCIAMENTO DE JOBS (COLETAS)
+// ==========================================
+
+// 1. Criar um novo Job (Broadcast)
+router.post('/jobs', async (req, res) => {
+
+  const [ativos] = await db.query('SELECT ID_Job FROM Jobs WHERE Status_Trabalho = "Em Andamento"');
+  if (ativos.length > 0) {
+    return res.status(400).json({ erro: 'O hardware já está em uso por outra captura. Aguarde a conclusão ou pare o Job atual.' });
+  }
+
+  const { nome_trabalho, descricao, resolucao } = req.body;
+  const id_job = `job_${Date.now()}`; 
+  const resHz = resolucao || 100;
+
+  try {
+    const query = 'INSERT INTO Jobs (ID_Job, Nome_Trabalho, Descricao, Status_Trabalho) VALUES (?, ?, ?, ?)';
+    await db.query(query, [id_job, nome_trabalho, descricao, 'Em Andamento']);
+
+    const comandoMQTT = {
+      comando: "iniciar_captura",
+      job_id: id_job,
+      resolucao: resHz,
+      calibrar: true
+    };
+
+    // Publica em um tópico global para qualquer ESP32 conectado
+    mqttClient.publish('inertia/broadcast/cmd', JSON.stringify(comandoMQTT));
+
+    res.status(201).json({ mensagem: 'Job iniciado via Broadcast!', id_job });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// 2. Finalizar um Job ativo
+router.post('/jobs/:id/parar', async (req, res) => {
+  try {
+    await db.query('UPDATE Jobs SET Status_Trabalho = "Concluído", Fim_Captura = NOW() WHERE ID_Job = ?', [req.params.id]);
+    
+    // Dispara a parada para todos os sensores
+    mqttClient.publish('inertia/broadcast/cmd', JSON.stringify({ comando: "parar_captura" }));
+
+    res.json({ mensagem: 'Comando de parada enviado (Broadcast)!' });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// 3. Listar todos os Jobs (Sem necessidade de JOIN com Máquinas)
+router.get('/jobs', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM Jobs ORDER BY Inicio_Captura DESC');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// 4. Renomear/Editar um Job
+router.put('/jobs/:id', async (req, res) => {
+  const { nome_trabalho, descricao } = req.body;
+  try {
+    await db.query('UPDATE Jobs SET Nome_Trabalho = ?, Descricao = ? WHERE ID_Job = ?', [nome_trabalho, descricao, req.params.id]);
+    res.json({ mensagem: 'Job atualizado com sucesso!' });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// 5. Excluir um Job e limpar seus dados de vibração associados (Cascade manual)
+router.delete('/jobs/:id', async (req, res) => {
+  const id_job = req.params.id;
+  try {
+    // Remove primeiro os dados das leituras devido à restrição de Foreign Key
+    await db.query('DELETE FROM Leituras_Acelerometro WHERE ID_Job = ?', [id_job]);
+    await db.query('DELETE FROM Jobs WHERE ID_Job = ?', [id_job]);
+    res.json({ mensagem: 'Job e dados de telemetria brutos removidos do sistema!' });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// ==========================================
+// ROTA PROCESSADORA (DADOS ANALÍTICOS)
+// ==========================================
+
+// 6. Retorna os dados do gráfico estruturados e os cálculos dos cards (RMS, Pico, PP)
+router.get('/jobs/:id/analise', async (req, res) => {
+  const id_job = req.params.id;
+  try {
+    // Busca todas as leituras brutas associadas àquele Job específico
+    const query = 'SELECT Timestamp_Leitura, Eixo_X, Eixo_Y, Eixo_Z FROM Leituras_Acelerometro WHERE ID_Job = ? ORDER BY Timestamp_Leitura ASC';
+    const [leituras] = await db.query(query, [id_job]);
+
+    // Frequência padrão de amostragem adotada (100 Hz do ESP32)
+    const analiseMatematica = processarDadosVibracao(leituras, 100);
+
+    res.json({
+      id_job,
+      ...analiseMatematica
+    });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// Listar TODAS as coletas (Jobs) para popular a barra lateral do Dashboard
+router.get('/jobs', async (req, res) => {
+  try {
+    // Traz os jobs cruzando com o nome da máquina
+    const query = `
+      SELECT j.*, m.Nome_Operacional 
+      FROM Jobs j 
+      LEFT JOIN Maquinas m ON j.ID_Maquina = m.ID_Maquina 
+      ORDER BY j.Inicio_Captura DESC
+    `;
+    const [rows] = await db.query(query);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
 
 router.post('/auth/login', async (req, res) => {
   const { login, senha } = req.body;

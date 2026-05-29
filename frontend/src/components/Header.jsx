@@ -19,10 +19,14 @@ export default function Header({ colors, handleNavigation, currentPage }) {
             className="flex-shrink-0 flex items-center cursor-pointer transition-transform hover:scale-105"
             onClick={() => onNavClick('home', false)}
           >
-            <span className="text-4xl font-extrabold tracking-tight" style={{ color: colors.primaryBlue }}>
-              inert<span style={{ color: colors.primaryGreen }}>i</span>a
-              <span className="text-lg font-bold ml-1" style={{ color: colors.secGray }}>labs.</span>
-            </span>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleNavigation('home')}>
+              {/* A tag img busca direto da pasta public automaticamente */}
+              <img
+                src="/logo-navbar.png"
+                alt="Inertia Labs Logo"
+                className="h-9 w-auto object-contain"
+              />
+            </div>
           </div>
 
           {/* Desktop Menu */}

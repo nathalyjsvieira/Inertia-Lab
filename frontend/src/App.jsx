@@ -11,7 +11,15 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  // 1. Lê a memória do navegador ao carregar a página (Evita o F5 quebrar a tela)
+  const [currentPage, setCurrentPage] = useState(() => {
+    return localStorage.getItem('paginaAtual') || 'home';
+  });
+
+  // 2. Salva a tela atual na memória sempre que ela mudar
+  useEffect(() => {
+    localStorage.setItem('paginaAtual', currentPage);
+  }, [currentPage]);
 
   // Rola para o topo quando a página muda
   useEffect(() => {

@@ -7,9 +7,14 @@ export default function Footer({ colors, handleNavigation }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0 text-center md:text-left cursor-pointer" onClick={() => handleNavigation('home', false)}>
-            <span className="text-2xl font-extrabold tracking-tight block mb-2" style={{ color: colors.primaryBlue }}>
-              inert<span style={{ color: colors.primaryGreen }}>i</span>a <span style={{ color: colors.secGray }}>labs.</span>
-            </span>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleNavigation('home')}>
+              {/* A tag img busca direto da pasta public automaticamente */}
+              <img
+                src="/logo-navbar.png"
+                alt="Inertia Labs Logo"
+                className="h-9 w-auto object-contain"
+              />
+            </div>
             <p className="text-sm" style={{ color: colors.secGray }}>
               Engenharia da Computação / 5° Sem. - 2026
             </p>
