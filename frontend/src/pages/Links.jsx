@@ -21,40 +21,41 @@ export default function Links({ colors }) {
               desc: 'Código fonte embarcado para captura e FFT em tempo real (C++ / Python).',
               icon: <Github size={32} />,
               color: colors.primaryBlue,
-              tag: 'Código'
+              tag: 'Código',
+              url: 'https://github.com/nathalyjsvieira/Inertia-Lab'
             },
             {
               title: 'Modelos de Machine Learning',
               desc: 'Jupyter Notebooks e datasets de treinamento de falhas sonoras.',
               icon: <Brain size={32} />,
               color: colors.secBlue,
-              tag: 'IA / Dados'
+              tag: 'IA / Dados',
+              url: 'https://colab.research.google.com/...'
             },
             {
-              title: 'Artigo Científico (Draft)',
+              title: 'Artigo Científico',
               desc: 'Documento acadêmico descrevendo a metodologia e resultados preliminares.',
               icon: <FileText size={32} />,
               color: colors.primaryGreen,
-              tag: 'PDF'
+              tag: 'PDF',
+              url: 'https://drive.google.com/file/d/seulink/view'
             },
             {
               title: 'Mapa de identidade visual do projeto',
               desc: 'Documento descrevendo a escolha de elementos visuais para a marca do projeto.',
               icon: <FileText size={32} />,
               color: colors.primaryBlue,
-              tag: 'PDF'
-            },
-            {
-              title: 'Documentação da API',
-              desc: 'Endpoints para integração do dashboard de monitoramento industrial.',
-              icon: <BookOpen size={32} />,
-              color: colors.secBlue,
-              tag: 'Docs'
+              tag: 'PDF',
+              url: 'https://canva.link/5f48kqccn55zj5s'
             }
           ].map((link, i) => (
             <a
               key={i}
-              href="#"
+              // 2. AQUI A MÁGICA ACONTECE. ELE PUXA A URL QUE VOCÊ CADASTROU LÁ EM CIMA:
+              href={link.url}
+              // 3. FAZ ABRIR EM UMA NOVA ABA:
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-all group flex flex-col justify-between"
             >
               <div>

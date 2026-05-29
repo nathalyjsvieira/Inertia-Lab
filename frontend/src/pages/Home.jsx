@@ -212,7 +212,7 @@ export default function Home({ colors, handleNavigation }) {
               {
                 nome: 'Henrique Prado',
                 papel: 'Especialista em gestão de projetos e documentação',
-                desc: 'Responsável pelo acompanhamento das entregas do projeto, gestão de riscos, documentação arquitetural e manuais de uso."'
+                desc: 'Responsável pelo acompanhamento das entregas do projeto, gestão de riscos, documentação arquitetural e manuais de uso.'
               },
               {
                 nome: 'João Henrique',
@@ -250,7 +250,7 @@ export default function Home({ colors, handleNavigation }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-16">
             <div className="lg:w-1/3">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Deconstrução Visual & Metodologia</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">Desconstrução Visual & Metodologia</h2>
               <p className="text-gray-300 text-lg mb-8">
                 Nossa identidade visual não é apenas estética; é o mapa da nossa metodologia de trabalho. O símbolo do infinito reflete nosso compromisso com o ciclo de vida completo da tecnologia.
               </p>

@@ -231,7 +231,6 @@ export default function Dashboard({ colors, handleNavigation }) {
       {/* SIDEBAR COM A LOGO (Segunda Versão) */}
       <aside className="w-64 bg-white dark:bg-[#1e1e1e] border-r border-gray-200 dark:border-gray-800 flex flex-col transition-colors duration-300">
         <div className="h-20 flex items-center px-6 border-b border-gray-200 dark:border-gray-800">
-          <img src="/logo.png" alt="Logo" className="h-8 w-auto mr-3 object-contain" />
           <span className="text-2xl font-extrabold tracking-tight dark:text-white" style={{ color: !isDarkMode ? colors.primaryBlue : undefined }}>
             inert<span style={{ color: colors.primaryGreen }}>i</span>a.
           </span>
